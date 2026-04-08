@@ -6,6 +6,9 @@ env:
 jobs:
   build-push-image:
     runs-on: ubuntu-latest
+      permissions:
+      contents: read
+      packages: write
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -24,8 +27,13 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-      - name: Login to GitHub Registry
-        run: echo ${{ secrets.TOKEN_GITHUB }} | docker login ghcr.io -u username_github --password-stdin
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: stop and remove existing container
         run: docker compose down --rmi all
       - name: start container
