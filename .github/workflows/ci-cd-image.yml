@@ -16,8 +16,12 @@ jobs:
         run: docker build -t $IMAGE_NAME .
       - name: List Image
         run: docker images
-      - name: Login to GitHub Registry
-        run: echo ${{ secrets.TOKEN_GITHUB }} | docker login ghcr.io -u username_github --password-stdin
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Push Image
         run: docker push $IMAGE_NAME
 
